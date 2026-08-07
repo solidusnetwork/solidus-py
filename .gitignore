@@ -4,8 +4,13 @@ python/solidus_sdk/*.so
 python/solidus_sdk/*.pyd
 python/solidus_sdk/*.dylib
 
+# Kept identical to the public repo's copy on purpose. This directory is
+# exported verbatim to github.com/solidusnetwork/solidus-py, so a rule that
+# exists only there gets overwritten on the next sync — which is exactly how a
+# tree full of .pyc files nearly went public.
 target/
 dist/
 .venv/
 __pycache__/
+*.py[co]
 .pytest_cache/

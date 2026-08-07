@@ -215,12 +215,31 @@ forces every user to have a Rust toolchain; wheels have to be built per platform
 
 ## Development
 
+**Without a Rust toolchain** — runs everything except the four BBS+ vectors, and says so:
+
 ```bash
+git clone --recurse-submodules https://github.com/solidusnetwork/solidus-py.git
+cd solidus-py
 uv venv .venv && . .venv/bin/activate
-uv pip install maturin pytest blake3 pynacl
+uv pip install pytest blake3 pynacl
+PYTHONPATH=python pytest
+```
+
+`test-vectors/` is a submodule pointing at
+[solidus-test-vectors](https://github.com/solidusnetwork/solidus-test-vectors) — the same repository
+we ask third parties to run against their own implementations. It is a pointer, not a copy, so the
+suite here cannot quietly diverge from the one we publish.
+
+**With a Rust toolchain**, inside the monorepo, for the full 8/12:
+
+```bash
+uv pip install maturin
 maturin develop
 pytest
 ```
+
+`SOLIDUS_REQUIRE_NATIVE=1` turns a missing extension from a report into an error. CI sets it, so a
+wheel that shipped without its native half cannot go green.
 
 `pytest` runs the conformance vectors, every docstring example, **and** every example in this file.
 
