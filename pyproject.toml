@@ -1,0 +1,32 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "solidus-sdk"
+version = "0.0.0"
+description = "Python SDK for the Solidus Network — did:solidus derivation, resolution and credential verification"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "blake3>=1.0",
+    # PyNaCl, not `cryptography`. See tests/test_ed25519_strict.py: OpenSSL's
+    # Ed25519 is permissive about small-order keys and we require strict.
+    "pynacl>=1.5",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "maturin>=1.0"]
+
+[tool.maturin]
+python-source = "python"
+module-name = "solidus_sdk.solidus_sdk_native"
+
+[tool.pytest.ini_options]
+# doctest is the doc-example gate — the Python equivalent of the checker that
+# exists because an outsider found four README blocks that did not compile.
+# --doctest-glob makes README.md executable: a README that stops being true
+# is a test failure. An outsider found four blocks in our TypeScript README
+# that did not compile against the published packages; this is the response.
+addopts = "--doctest-modules --doctest-glob=*.md"
+testpaths = ["tests", "python/solidus_sdk", "README.md"]

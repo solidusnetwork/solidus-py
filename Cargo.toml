@@ -1,0 +1,29 @@
+[package]
+name = "solidus-sdk-native"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# The native half of `solidus-sdk`. Exists for one reason: BBS+ has no usable
+# native Python implementation (P0, 2026-08-07), and byte-compatibility with
+# `zkryptium 0.6` is the contract the conformance vectors encode.
+#
+# Everything that CAN be pure Python is pure Python — see python/solidus_sdk/.
+# The smaller this file stays, the fewer platforms the wheel matrix has to cover.
+
+[lib]
+name = "solidus_sdk_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+# 0.29+ required: 0.23 fails to build against Python 3.14 outright.
+pyo3 = { version = "0.29", features = ["extension-module"] }
+# `bbs` only. No `consensus`, so no blst and no C BLS toolchain in the wheel.
+#
+# ⚠ THIS PATH ONLY RESOLVES INSIDE THE SOLIDUS MONOREPO. `solidus-crypto` is not
+# on crates.io yet, so a standalone clone cannot build the native module — see
+# "Installing from source" in README.md. The pure-Python half is unaffected.
+# Publishing the crate is what lifts this; a git dependency on the public
+# protocol repo would not, because that copy predates the feature gating and
+# would drag blst back into every wheel.
+solidus-crypto = { path = "../../protocol/apps/consensus/crates/solidus-crypto", default-features = false, features = ["bbs"] }

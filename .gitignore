@@ -1,0 +1,11 @@
+# The compiled extension. Per-platform and rebuilt by `maturin develop`;
+# committing one means every other platform silently imports the wrong ABI.
+python/solidus_sdk/*.so
+python/solidus_sdk/*.pyd
+python/solidus_sdk/*.dylib
+
+target/
+dist/
+.venv/
+__pycache__/
+.pytest_cache/

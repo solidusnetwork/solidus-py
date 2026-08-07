@@ -1,0 +1,3 @@
+[submodule "vendor/solidus-test-vectors"]
+	path = vendor/solidus-test-vectors
+	url = https://github.com/solidusnetwork/solidus-test-vectors.git
