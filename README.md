@@ -3,8 +3,13 @@
 Python SDK for [Solidus Network](https://solidus.network) — `did:solidus` derivation, identifier
 validation, W3C verification-method encoding, strict Ed25519, and BBS+ selective disclosure.
 
-**Status: unreleased.** Nothing on PyPI yet. The version is `0.0.0` on purpose — `0.1.0` gets used
-once, and a burned version number on PyPI cannot be re-uploaded.
+**Status: not on PyPI yet, and the remaining step is not code.** The distribution is
+`solidus-network` at `0.1.0`, wheels build for five platforms, and publishing goes through PyPI
+Trusted Publishing over OIDC, so no API token exists anywhere. What is outstanding is the one-time
+pending-publisher form in the PyPI web interface; after that, a `v*` tag publishes.
+
+⚠ `0.1.0` can be uploaded exactly once and a burned version number cannot be reused, which is why
+nothing is tagged until that form is filled in.
 
 ## What it does, and what it does not
 
