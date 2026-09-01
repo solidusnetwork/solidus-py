@@ -1,4 +1,4 @@
-# solidus-sdk
+# solidus-network
 
 Python SDK for [Solidus Network](https://solidus.network) — `did:solidus` derivation, identifier
 validation, W3C verification-method encoding, strict Ed25519, and BBS+ selective disclosure.
@@ -25,7 +25,7 @@ verification and selective-disclosure proofs.
 Not yet. When it publishes:
 
 ```bash
-pip install solidus-sdk
+pip install solidus-network
 ```
 
 ### Installing from source — read this before you try
@@ -39,7 +39,7 @@ This is stated here rather than left for you to discover, and it is a real limit
 formality. Two things lift it, in this order:
 
 1. **Publish `solidus-crypto` to crates.io**, so the dependency resolves for anyone.
-2. **A CI wheel matrix** (linux/macos/windows × cp39–cp314), so `pip install solidus-sdk` needs no
+2. **A CI wheel matrix** (linux/macos/windows × cp39–cp314), so `pip install solidus-network` needs no
    Rust toolchain at all. An sdist alone would force one on every user.
 
 Neither has happened yet. Until then this repository is readable, reviewable and runnable *inside*
@@ -211,7 +211,7 @@ So BBS+ binds the Rust crate via PyO3, which buys byte-parity with the chain and
 per-platform wheel. Everything else is pure Python and ships in the same wheel at no native cost.
 The binding is feature-gated to `bbs` only, so no C BLS toolchain enters the build.
 
-⚠ **This is why `pip install solidus-sdk` is not yet a promise the repo can keep.** An sdist alone
+⚠ **This is why `pip install solidus-network` is not yet a promise the repo can keep.** An sdist alone
 forces every user to have a Rust toolchain; wheels have to be built per platform first. That matrix
 now exists (`.github/workflows/python-wheels.yml` in the monorepo) and produces **five** wheels
 rather than thirty: `pyo3`'s `abi3-py39` makes one wheel per platform serve every CPython from 3.9
