@@ -8,7 +8,7 @@ usable native Python BBS+ implementation exists and byte-compatibility with the
 Rust chain is what the conformance vectors encode.
 """
 
-from . import ed25519
+from . import ed25519, identity, verify
 from .derivation import DerivedKey, identity_key, pairwise_key, seed_from_mnemonic
 from .did import (
     decode_public_key_multibase,
@@ -29,6 +29,8 @@ __all__ = [
     "public_key_multibase",
     "decode_public_key_multibase",
     "ed25519",
+    "identity",
+    "verify",
     "is_valid_identifier",
     "is_valid_did",
 ]

@@ -16,10 +16,10 @@ from __future__ import annotations
 from typing import Sequence
 
 try:
-    from . import solidus_sdk_native as _native
+    from . import solidus_network_native as _native
 except ImportError as exc:  # pragma: no cover - exercised by the wheel matrix
     raise ImportError(
-        "solidus_sdk's native BBS+ module is missing. A wheel always ships it; "
+        "solidus_network's native BBS+ module is missing. A wheel always ships it; "
         "if you installed from source you need a Rust toolchain, or "
         "`maturin develop` in a checkout."
     ) from exc

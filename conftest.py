@@ -1,6 +1,6 @@
 """Test collection rules for the one module that may legitimately be absent.
 
-`solidus_sdk.bbs` raises at import when the compiled extension is missing —
+`solidus_network.bbs` raises at import when the compiled extension is missing —
 deliberately, so a user importing it gets a sentence explaining what to do
 rather than an `AttributeError` three frames later. The cost is that
 `--doctest-modules` cannot collect the file at all in a clone without a Rust
@@ -19,7 +19,7 @@ import os
 collect_ignore = []
 
 try:
-    import solidus_sdk.bbs  # noqa: F401
+    import solidus_network.bbs  # noqa: F401
 
     NATIVE = True
 except ImportError as exc:
@@ -28,7 +28,7 @@ except ImportError as exc:
         raise RuntimeError(
             f"SOLIDUS_REQUIRE_NATIVE=1 but the native BBS+ extension is missing: {exc}"
         ) from exc
-    collect_ignore.append("python/solidus_sdk/bbs.py")
+    collect_ignore.append("python/solidus_network/bbs.py")
 
 
 def pytest_report_header(config):
@@ -36,6 +36,6 @@ def pytest_report_header(config):
         return "solidus-sdk: native BBS+ extension present — all 8 in-scope vectors will run"
     return (
         "solidus-sdk: native BBS+ extension MISSING. 4 bbs-* vectors and "
-        "python/solidus_sdk/bbs.py will NOT be checked. Run `maturin develop`, or "
+        "python/solidus_network/bbs.py will NOT be checked. Run `maturin develop`, or "
         "set SOLIDUS_REQUIRE_NATIVE=1 to make this an error."
     )

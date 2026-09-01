@@ -60,7 +60,7 @@ is the response.
 ### Derive an identity from a mnemonic
 
 ```python
->>> from solidus_sdk import seed_from_mnemonic, identity_key
+>>> from solidus_network import seed_from_mnemonic, identity_key
 >>> seed = seed_from_mnemonic(" ".join(["abandon"] * 23 + ["art"]))
 >>> key = identity_key(seed)
 >>> key.did("testnet")
@@ -77,7 +77,7 @@ A wallet gives each verifier its own key, so two verifiers holding the same user
 them.
 
 ```python
->>> from solidus_sdk import pairwise_key
+>>> from solidus_network import pairwise_key
 >>> a = pairwise_key(seed, "rp-a.example.com")
 >>> b = pairwise_key(seed, "rp-b.example.com")
 >>> a.identifier == b.identifier
@@ -93,23 +93,24 @@ This is what separates `invalidDid` from `notFound` — "no such DID" implies th
 have existed.
 
 ```python
->>> from solidus_sdk import is_valid_did
+>>> from solidus_network import is_valid_did
 >>> is_valid_did("did:solidus:testnet:3tBoVe6XRtirzr8SdRotGgbkuEQN")
 True
->>> is_valid_did("did:solidus:devnet:3tBoVe6XRtirzr8SdRotGgbkuEQN")   # no such network
+>>> is_valid_did("did:solidus:devnet:3tBoVe6XRtirzr8SdRotGgbkuEQN")  # did-syntax:invalid-on-purpose
 False
->>> is_valid_did("did:solidus:testnet:0OIl000000000000000000")        # not base58
+>>> is_valid_did("did:solidus:testnet:0OIl000000000000000000")  # did-syntax:invalid-on-purpose
 False
+
 
 ```
 
 ### Read a key out of a DID Document, and verify with it
 
 ```python
->>> from solidus_sdk import decode_public_key_multibase, ed25519
+>>> from solidus_network import decode_public_key_multibase, ed25519
 >>> import nacl.signing
 >>> signer = nacl.signing.SigningKey(b"\x07" * 32)
->>> from solidus_sdk import public_key_multibase
+>>> from solidus_network import public_key_multibase
 >>> verification_method = {
 ...     "type": "Ed25519VerificationKey2020",
 ...     "publicKeyMultibase": public_key_multibase(bytes(signer.verify_key)),
@@ -138,8 +139,8 @@ proof, the issuer's public key, and the `(index, message)` pairs being asserted.
 
 ```python
 >>> import pytest
->>> _ = pytest.importorskip("solidus_sdk.solidus_sdk_native")  # skips without the wheel
->>> from solidus_sdk import bbs
+>>> _ = pytest.importorskip("solidus_network.solidus_network_native")  # skips without the wheel
+>>> from solidus_network import bbs
 >>> sk = bytes.fromhex(
 ...     "363ef9668e4e1cf86b5f2092c51f7c056d6841cec69920cc5d887f68c6cab6d1")
 >>> bbs.public_key_hex(sk)[:32]
@@ -148,7 +149,7 @@ proof, the issuer's public key, and the `(index, message)` pairs being asserted.
 ```
 
 *(The `importorskip` line keeps this file runnable as a test in a clone without the compiled
-extension. Your own code needs only the `from solidus_sdk import bbs`.)*
+extension. Your own code needs only the `from solidus_network import bbs`.)*
 
 Full sign → prove → verify flows, including every negative case, are in `tests/test_vectors.py`
 against the published conformance suite.
@@ -157,18 +158,18 @@ against the published conformance suite.
 
 | module | name | what it is |
 |---|---|---|
-| `solidus_sdk` | `seed_from_mnemonic(mnemonic, passphrase="")` | BIP-39 → 64-byte seed, NFKD-normalised here |
+| `solidus_network` | `seed_from_mnemonic(mnemonic, passphrase="")` | BIP-39 → 64-byte seed, NFKD-normalised here |
 | | `identity_key(seed64)` → `DerivedKey` | `seed64[:32]`, outside the HKDF tree |
 | | `pairwise_key(seed64, verifier_id)` → `DerivedKey` | HKDF-SHA512, one unlinkable key per verifier |
 | | `DerivedKey.identifier` · `.did(network)` | base58 address · full `did:solidus:…` |
-| `solidus_sdk.did` | `identifier_for(public_key)` | `base58(BLAKE3-256(key)[:20])` |
+| `solidus_network.did` | `identifier_for(public_key)` | `base58(BLAKE3-256(key)[:20])` |
 | | `did_for(public_key, network)` | the full DID string |
 | | `public_key_multibase(public_key)` | `z6Mk…`, **with** the `0xed01` multicodec header |
 | | `decode_public_key_multibase(mb)` | the inverse; also accepts pre-2026-08-07 headerless keys |
 | | `is_valid_identifier(s)` · `is_valid_did(s)` | SPEC v0.2.0 §4.1 syntax |
-| `solidus_sdk.ed25519` | `verify(public_key, msg, sig)` | strict; returns `False`, never raises |
+| `solidus_network.ed25519` | `verify(public_key, msg, sig)` | strict; returns `False`, never raises |
 | | `verify_multibase(mb, msg, sig)` | the same, straight from a DID Document |
-| `solidus_sdk.bbs` | `public_key_hex(secret_key)` | from key **bytes**, never from IKM |
+| `solidus_network.bbs` | `public_key_hex(secret_key)` | from key **bytes**, never from IKM |
 | | `verify(sig_hex, pk_hex, header, messages)` | over the full message vector |
 | | `create_proof(…)` → proof hex | holder side |
 | | `verify_proof(…)` | verifier side |
@@ -211,7 +212,11 @@ per-platform wheel. Everything else is pure Python and ships in the same wheel a
 The binding is feature-gated to `bbs` only, so no C BLS toolchain enters the build.
 
 ⚠ **This is why `pip install solidus-sdk` is not yet a promise the repo can keep.** An sdist alone
-forces every user to have a Rust toolchain; wheels have to be built per platform first.
+forces every user to have a Rust toolchain; wheels have to be built per platform first. That matrix
+now exists (`.github/workflows/python-wheels.yml` in the monorepo) and produces **five** wheels
+rather than thirty: `pyo3`'s `abi3-py39` makes one wheel per platform serve every CPython from 3.9
+up. Measured, not assumed — a wheel built on CPython 3.14 was installed on 3.9, 3.11 and 3.13 and
+reproduced the frozen BBS+ public key and DID on all three.
 
 ## Development
 

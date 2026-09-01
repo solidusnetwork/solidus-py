@@ -8,16 +8,16 @@ publish = false
 # native Python implementation (P0, 2026-08-07), and byte-compatibility with
 # `zkryptium 0.6` is the contract the conformance vectors encode.
 #
-# Everything that CAN be pure Python is pure Python — see python/solidus_sdk/.
+# Everything that CAN be pure Python is pure Python — see python/solidus_network/.
 # The smaller this file stays, the fewer platforms the wheel matrix has to cover.
 
 [lib]
-name = "solidus_sdk_native"
+name = "solidus_network_native"
 crate-type = ["cdylib"]
 
 [dependencies]
 # 0.29+ required: 0.23 fails to build against Python 3.14 outright.
-pyo3 = { version = "0.29", features = ["extension-module"] }
+pyo3 = { version = "0.29", features = ["extension-module", "abi3-py39"] }
 # `bbs` only. No `consensus`, so no blst and no C BLS toolchain in the wheel.
 #
 # ⚠ THIS PATH ONLY RESOLVES INSIDE THE SOLIDUS MONOREPO. `solidus-crypto` is not

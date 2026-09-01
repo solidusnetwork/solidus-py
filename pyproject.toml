@@ -32,7 +32,7 @@ dev = ["pytest>=8", "maturin>=1.0"]
 
 [tool.maturin]
 python-source = "python"
-module-name = "solidus_sdk.solidus_sdk_native"
+module-name = "solidus_network.solidus_network_native"
 
 [tool.pytest.ini_options]
 # doctest is the doc-example gate — the Python equivalent of the checker that
@@ -41,4 +41,4 @@ module-name = "solidus_sdk.solidus_sdk_native"
 # is a test failure. An outsider found four blocks in our TypeScript README
 # that did not compile against the published packages; this is the response.
 addopts = "--doctest-modules --doctest-glob=*.md"
-testpaths = ["tests", "python/solidus_sdk", "README.md"]
+testpaths = ["tests", "python/solidus_network", "README.md"]
