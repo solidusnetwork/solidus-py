@@ -1,0 +1,92 @@
+name: release
+
+# Publishes to PyPI via Trusted Publishing (OIDC). There is no API token
+# anywhere in this repository or in its secrets, by design: a token is a
+# credential that can leak, be committed, or outlive the person who made it.
+#
+# One-time setup, in the PyPI web interface, by a maintainer:
+#   PyPI -> your project -> Publishing -> Add a new pending publisher
+#     Owner:            solidusnetwork
+#     Repository name:  solidus-py
+#     Workflow name:    release.yml
+#     Environment:      pypi
+#
+# After that, pushing a v* tag publishes. Nothing else is required.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wheels:
+    name: wheel · ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest,  target: x86_64  }
+          - { os: ubuntu-latest,  target: aarch64 }
+          - { os: macos-latest,   target: aarch64 }
+          - { os: macos-13,       target: x86_64  }
+          - { os: windows-latest, target: x64     }
+    steps:
+      # The test vectors are a submodule; without this the conformance tests
+      # silently have nothing to compare against.
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      # abi3-py39, so ONE wheel per platform covers Python 3.9 and newer.
+      # The matrix is over operating systems, not interpreter versions.
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist
+          manylinux: auto
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-${{ matrix.os }}-${{ matrix.target }}
+          path: dist
+
+  sdist:
+    name: sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          args: --out dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+  publish:
+    name: publish to PyPI
+    needs: [wheels, sdist]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      # This is what makes Trusted Publishing work. It is also the only
+      # credential in the whole workflow, and it is minted per-run by GitHub
+      # rather than stored anywhere.
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: What is about to be published
+        run: ls -la dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
