@@ -11,7 +11,7 @@
 //! WHY IT STAYS SMALL. Every function here is a platform the wheel matrix has
 //! to build for. Everything expressible in pure Python — base58, BLAKE3
 //! addressing, the derivation hierarchy, DID syntax — lives in
-//! `python/solidus_sdk/` and ships in the same wheel with no native cost.
+//! `python/solidus_network/` and ships in the same wheel with no native cost.
 //!
 //! WHY PROOF CREATION AND PROOF VERIFICATION ARE SEPARATE CALLS. The obvious
 //! shape is one `create_and_verify` function, and it would be shorter. It would
@@ -23,7 +23,8 @@
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 
-use solidus_crypto::bbs::{BbsProof, BbsPublicKey, BbsSecretKey, BbsSignature};
+mod bbs;
+use bbs::{BbsProof, BbsPublicKey, BbsSecretKey, BbsSignature};
 
 fn value_err<E: std::fmt::Debug>(e: E) -> PyErr {
     PyValueError::new_err(format!("{e:?}"))
@@ -115,7 +116,7 @@ fn bbs_verify_proof(
 }
 
 #[pymodule]
-fn solidus_sdk_native(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn solidus_network_native(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(bbs_public_key_hex, m)?)?;
     m.add_function(wrap_pyfunction!(bbs_verify, m)?)?;
     m.add_function(wrap_pyfunction!(bbs_create_proof, m)?)?;

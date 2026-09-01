@@ -18,12 +18,16 @@ crate-type = ["cdylib"]
 [dependencies]
 # 0.29+ required: 0.23 fails to build against Python 3.14 outright.
 pyo3 = { version = "0.29", features = ["extension-module", "abi3-py39"] }
-# `bbs` only. No `consensus`, so no blst and no C BLS toolchain in the wheel.
-#
-# ⚠ THIS PATH ONLY RESOLVES INSIDE THE SOLIDUS MONOREPO. `solidus-crypto` is not
-# on crates.io yet, so a standalone clone cannot build the native module — see
-# "Installing from source" in README.md. The pure-Python half is unaffected.
-# Publishing the crate is what lifts this; a git dependency on the public
-# protocol repo would not, because that copy predates the feature gating and
-# would drag blst back into every wheel.
-solidus-crypto = { path = "../../protocol/apps/consensus/crates/solidus-crypto", default-features = false, features = ["bbs"] }
+# BBS+ comes from a vendored copy of solidus-crypto's bbs module (src/bbs.rs),
+# not a path dependency. The path escaped this repository and made a standalone
+# clone unbuildable; these three crates are what that module actually imports.
+# Versions match the monorepo lockfile so the vendored copy behaves identically.
+rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+zkryptium = "0.6.2"
+thiserror = "2.0"
+hex = "0.4"
+
+[dev-dependencies]
+# Used only by the vendored module's own #[cfg(test)] round-trip tests.
+serde_json = "1.0"
