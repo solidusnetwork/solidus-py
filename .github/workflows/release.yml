@@ -20,6 +20,12 @@ on:
 permissions:
   contents: read
 
+# Every action is pinned to an immutable commit SHA, not a tag. A tag is
+# mutable: whoever controls the action's repository can repoint v4 at new code,
+# and this workflow holds `id-token: write`, so a swapped action could mint the
+# PyPI OIDC identity and publish anything under our name. The trailing comment
+# records which version each SHA was, so upgrading stays legible.
+
 jobs:
   wheels:
     name: wheel · ${{ matrix.target }}
@@ -36,21 +42,21 @@ jobs:
     steps:
       # The test vectors are a submodule; without this the conformance tests
       # silently have nothing to compare against.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           submodules: recursive
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: '3.11'
       # abi3-py39, so ONE wheel per platform covers Python 3.9 and newer.
       # The matrix is over operating systems, not interpreter versions.
       - name: Build wheel
-        uses: PyO3/maturin-action@v1
+        uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1
         with:
           target: ${{ matrix.target }}
           args: --release --out dist
           manylinux: auto
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: wheel-${{ matrix.os }}-${{ matrix.target }}
           path: dist
@@ -59,15 +65,15 @@ jobs:
     name: sdist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           submodules: recursive
       - name: Build sdist
-        uses: PyO3/maturin-action@v1
+        uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1
         with:
           command: sdist
           args: --out dist
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: sdist
           path: dist
@@ -83,10 +89,10 @@ jobs:
       # rather than stored anywhere.
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           path: dist
           merge-multiple: true
       - name: What is about to be published
         run: ls -la dist
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
