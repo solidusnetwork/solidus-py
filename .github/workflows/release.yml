@@ -37,7 +37,11 @@ jobs:
           - { os: ubuntu-latest,  target: x86_64  }
           - { os: ubuntu-latest,  target: aarch64 }
           - { os: macos-latest,   target: aarch64 }
-          - { os: macos-13,       target: x86_64  }
+          # Intel macOS is cross-compiled from the arm64 runner. macos-13 was
+          # used here and is a RETIRED runner image: the label is never assigned,
+          # so the job sits queued forever and silently blocks the publish job
+          # behind it. Measured once at ten hours with no runner and no error.
+          - { os: macos-latest,   target: x86_64  }
           - { os: windows-latest, target: x64     }
     steps:
       # The test vectors are a submodule; without this the conformance tests
