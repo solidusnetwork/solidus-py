@@ -19,7 +19,7 @@ import pytest
 
 README = pathlib.Path(__file__).resolve().parents[1] / "README.md"
 
-# Rows look like:  | `solidus_sdk.did` | `identifier_for(public_key)` | … |
+# Rows look like:  | `solidus_network.did` | `identifier_for(public_key)` | … |
 # and continuation rows carry an empty first cell, inheriting the module above.
 ROW = re.compile(r"^\|\s*(`[^`]*`)?\s*\|\s*`([^`]+)`")
 
@@ -32,7 +32,7 @@ def _api_rows():
             continue
         if m.group(1):
             module = m.group(1).strip("`")
-        if module is None or not module.startswith("solidus_sdk"):
+        if module is None or not module.startswith("solidus_network"):
             continue
         for name in m.group(2).split("·"):
             # "identifier_for(public_key)" -> "identifier_for";
@@ -57,7 +57,7 @@ def test_documented_name_exists(module, symbol):
     try:
         obj = importlib.import_module(module)
     except ImportError as exc:
-        # `solidus_sdk.bbs` needs the compiled extension. In a clone without a
+        # `solidus_network.bbs` needs the compiled extension. In a clone without a
         # Rust toolchain it is absent, which says nothing about whether the
         # README is accurate — the same third outcome the vector runner reports.
         message = f"{module} unavailable ({str(exc).splitlines()[0]}) — table row NOT checked"

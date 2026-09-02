@@ -17,7 +17,7 @@ import pathlib
 
 import pytest
 
-from solidus_sdk import derivation, did
+from solidus_network import derivation, did
 
 # BBS+ is the one part of this package with a compiled extension. In a clone
 # without a Rust toolchain it is simply absent, and that is a THIRD outcome —
@@ -25,7 +25,7 @@ from solidus_sdk import derivation, did
 # how a suite starts lying: a crash reads as a broken package, and a silent skip
 # reads as a pass.
 try:
-    from solidus_sdk import bbs
+    from solidus_network import bbs
 
     NATIVE = True
     NATIVE_ERROR = ""

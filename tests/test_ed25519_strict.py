@@ -19,11 +19,19 @@ import pytest
 
 
 def test_all_zeros_key_and_signature_is_rejected():
-    """The vacuous identity equation: an all-zeros key with an all-zeros
-    signature satisfies ZIP-215 and must not satisfy us."""
+    """An all-zeros key with an all-zeros signature must never verify.
+
+    ⚠ Sampled over many messages, not one, and that matters. The all-zeros
+    encoding is a point of ORDER 4, not the identity, so a permissive verifier
+    accepts it only when ``k = SHA-512(R‖A‖M)`` is divisible by 4 — about one
+    message in four. Go's ``crypto/ed25519`` does exactly that: 959 of 4000.
+    A single-message version of this test passes against a broken verifier
+    three times out of four.
+    """
     verify_key = nacl.signing.VerifyKey(b"\x00" * 32)
-    with pytest.raises(nacl.exceptions.BadSignatureError):
-        verify_key.verify(b"any message", b"\x00" * 64)
+    for i in range(200):
+        with pytest.raises((nacl.exceptions.BadSignatureError, nacl.exceptions.CryptoError)):
+            verify_key.verify(f"msg-{i}".encode(), b"\x00" * 64)
 
 
 def test_a_real_signature_still_verifies():

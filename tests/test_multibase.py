@@ -13,7 +13,7 @@ import pathlib
 
 import pytest
 
-from solidus_sdk import _base58, did
+from solidus_network import _base58, did
 
 def _vectors_root() -> pathlib.Path:
     """Walk up until `test-vectors/` appears.

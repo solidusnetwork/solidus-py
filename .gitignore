@@ -1,8 +1,14 @@
 # The compiled extension. Per-platform and rebuilt by `maturin develop`;
 # committing one means every other platform silently imports the wrong ABI.
-python/solidus_sdk/*.so
-python/solidus_sdk/*.pyd
-python/solidus_sdk/*.dylib
+#
+# ⚠ GLOBBED, not spelled out. These rules named python/solidus_sdk/ and stopped
+# matching anything the day the package was renamed to solidus_network, so
+# `maturin develop` left a 2 MB untracked .so that any `git add -A` would have
+# committed. The rule was disarmed by a rename and nothing noticed, because a
+# .gitignore that matches nothing looks exactly like one with nothing to match.
+python/*/*.so
+python/*/*.pyd
+python/*/*.dylib
 
 # Kept identical to the public repo's copy on purpose. This directory is
 # exported verbatim to github.com/solidusnetwork/solidus-py, so a rule that

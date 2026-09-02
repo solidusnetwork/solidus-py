@@ -258,6 +258,21 @@ Before believing the suite, break something and watch it fail. Dropping the mult
 should and nothing else — and two of the four failures we seeded were caught by the doctests
 independently of the vector runner.
 
+## The rest of the ecosystem
+
+The same conformance vectors back three SDKs, and all three produce byte-identical output for the
+operations they share.
+
+| language | package | BBS+ |
+|---|---|---|
+| Python | this package, [`solidus-network`](https://pypi.org/project/solidus-network/) | yes |
+| TypeScript | [`@solidus-network/sdk`](https://www.npmjs.com/org/solidus-network) on npm | yes |
+| Go | [`github.com/solidusnetwork/solidus-go`](https://github.com/solidusnetwork/solidus-go) | no, the maintained Go BBS+ libraries implement a different scheme |
+
+The vectors themselves are at
+[`solidusnetwork/solidus-test-vectors`](https://github.com/solidusnetwork/solidus-test-vectors), so
+a third implementation can check itself against the same bytes.
+
 ## Licence
 
 Apache-2.0.
